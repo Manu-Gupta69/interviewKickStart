@@ -1,68 +1,75 @@
-import React, { useState } from 'react';
-import { Button, Modal, Box, Typography, IconButton, Divider } from '@mui/material';
+import React from 'react';
+import {
+  Modal,
+  Box,
+  Typography,
+  IconButton,
+  Divider,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
-const style = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  borderRadius: '10px', 
-  boxShadow: 24,
-
-};
+import DataTimeInputForm from './DateTimeInputForm';
+import ImageForm from './ImageForm';
+import ModalActions from './ModalBottom';
 
 const modalOverlayStyle = {
   position: 'fixed',
   top: 0,
   left: 0,
-  width: '100%',
-  height: '100%',
-  backgroundColor: 'rgba(0, 0, 0, 0.5)', 
-  backdropFilter: 'blur(5px)',
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 };
 
-const DialogBox: React.FC = () => {
-  const [open, setOpen] = useState(false);
+const style = {
+  backgroundColor: '#fff',
+  borderRadius: '10px',
+  width: '90vw', // Set width to a percentage of viewport width
+  maxWidth: '1000px', // Set a max width to prevent overly large modals
+  maxHeight: '90vh', // Set max height to ensure it fits within the viewport
+  boxShadow: 24,
+  padding: '24px', // Increased padding for better spacing
+  overflowY: 'auto', // Enable vertical scrolling if content overflows
+};
 
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+const MyModal = () => {
+  const open = true;
+  const handleClose = () => {};
 
   return (
-    <div>
-      <Modal
-        open={true}
-        onClose={handleClose}
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-      >
-        <Box sx={modalOverlayStyle}>
-          <Box sx={style}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding : "13px 12px" }}>
-              <Typography variant="h6" component="h2">
-                Modal Title
-              </Typography>
-              <IconButton
-                aria-label="close"
-                onClick={handleClose}
-                sx={{
-                  color: '#636973',
-                }}
-              >
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Divider sx={{ my: 2 }} />
-            <Typography sx={{ mt: 2 }}>
-              This modal has a background blur effect and a close button in the top right corner.
+    <Modal
+      open={open}
+      onClose={handleClose}
+      sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} // Center modal
+    >
+      <Box sx={modalOverlayStyle}>
+        <Box sx={style}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 12px' }}>
+            <Typography variant="h6" component="h2">
+              Modal Title
             </Typography>
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              sx={{ color: '#636973' }}
+            >
+              <CloseIcon />
+            </IconButton>
           </Box>
+          <Divider sx={{ my: 2 }} />
+          
+          {/* Ensure forms are consistently styled */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <ImageForm /> {/* Maintain spacing */}
+            <DataTimeInputForm />
+          </Box>
+          <ModalActions />
         </Box>
-      </Modal>
-    </div>
+      </Box>
+    </Modal>
   );
 };
 
-export default DialogBox;
+export default MyModal;

@@ -5,6 +5,8 @@ import WebinarNav from "./Presentation/Webinar/WebinarNavBar";
 import WebinarSearch from "./Presentation/Webinar/WebinarSearch";
 import { Box } from "@mui/material";
 import DialogBox from "./Presentation/Common/DialogBox";
+import InstructorForm from "./Presentation/Common/ImageForm";
+import DateTimeInput from "./Presentation/Common/DateTimeInputForm";
 
 function App() {
   return (
@@ -12,7 +14,8 @@ function App() {
       <WebinarNav />
       <WebinarSearch />
       <WebinarCardGrid />
-      <DialogBox />
+      {/* <DialogBox /> */}
+      
     </Box>
   );
 }

@@ -11,6 +11,5 @@ export const formatDate = (dateString: string): string => {
     return formattedDate.replace(',', ' •');
 }
 
-// Example usage
-const formattedDate = formatDate('2024-10-30');
-console.log(formattedDate);
+
+
