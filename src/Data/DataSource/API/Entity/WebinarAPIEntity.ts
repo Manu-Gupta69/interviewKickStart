@@ -1,10 +1,10 @@
 export interface WebinarAPIEntity {
-instructorName : String,
-instructorRole : String,
-instructorCompany : String,
-topic : String,
-webinarTitle : String,
-startDate : Date,
+instructorName : string,
+instructorRole : string,
+instructorCompany : string,
+topic : string,
+webinarTitle : string,
+startDate : string,
 startTime : number,
 endTime : number
 }

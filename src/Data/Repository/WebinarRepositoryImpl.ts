@@ -23,7 +23,7 @@ export class WebinarRepositoryImpl implements IWebinarRepository {
     return this.dataSource.removeById(id);
   }
 
-  async updateWebinar(id: string, value: Webinar): Promise<Webinar | WebinarAPIEntity | undefined> {
+  async updateWebinar(id: string, value: WebinarAPIEntity): Promise<Webinar | WebinarAPIEntity | undefined> {
     return this.dataSource.updateByField(id, value);
   }
 }
