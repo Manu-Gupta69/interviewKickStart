@@ -8,7 +8,7 @@ class LocalDB<T> implements IWebinarDataSource<T> {
     this.table = tableName;
 
     // Initialize localStorage with an empty array if the table doesn't exist
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       const getTable = this.getTable();
       if (!getTable) {
         this.setTable(JSON.stringify([]));
@@ -42,25 +42,28 @@ class LocalDB<T> implements IWebinarDataSource<T> {
 
   // Remove a record by ID
   removeById(columnId: string): boolean {
-    const updatedRecords = this.getAll().filter((record: any) => record.id !== columnId);
+    const updatedRecords = this.getAll().filter(
+      (record: any) => record.id.toString() !== columnId
+    );
+
     this.setTable(JSON.stringify(updatedRecords));
     return updatedRecords.length < this.getAll().length;
   }
 
   // Create a new record
-  create(record: T) : Promise<T> {
-     let updatedRecord : T = {
-      id : "ASdf",
-      ...record
-     }
+  create(record: T): Promise<T> {
     const allRecords = this.getAll();
+    let updatedRecord: T = {
+      id: allRecords?.length,
+      ...record,
+    };
     allRecords.push(updatedRecord);
     this.setTable(JSON.stringify(allRecords));
     return Promise.resolve(record);
   }
 
   // Update a record by ID
-  updateByField(id: string, updatedValue: Partial<T>): T | undefined  {
+  updateByField(id: string, updatedValue: Partial<T>): T | undefined {
     const allRecords = this.getAll();
     const recordIndex = allRecords.findIndex((record: any) => record.id === id);
 
@@ -70,7 +73,6 @@ class LocalDB<T> implements IWebinarDataSource<T> {
       this.setTable(JSON.stringify(allRecords));
       return updatedRecord;
     }
- 
   }
 }
 

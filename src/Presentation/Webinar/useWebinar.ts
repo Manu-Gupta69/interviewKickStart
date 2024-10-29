@@ -4,9 +4,13 @@ import { WebinarAPIEntity } from "../../Data/DataSource/API/Entity/WebinarAPIEnt
 import { WebinarUseCase } from "../../Domain/UseCase/Webinar/WebinarUseCase";
 import { useState ,useEffect } from "react";
 import { Webinar } from "../../Domain/Model/Webinar";
+import { FormValues } from "../../Common/interfaces";
+import { base64ToImageFile } from "../../Utils";
 
 export default function useWebinar() {
-const [webinars , setWebinars] = useState<Webinar[] | WebinarAPIEntity[]>([]);   
+const [webinars , setWebinars] = useState<Webinar[] | WebinarAPIEntity[]>([]);
+const [selectedWebinar , setSelectedWebinar] = useState<FormValues>();
+
 const db = new LocalDBDataSource<WebinarAPIEntity>('webinar');
 const webinarRepo = new WebinarRepositoryImpl(db);
 const webinarUseCase = new WebinarUseCase(webinarRepo);
@@ -16,14 +20,34 @@ const webinarUseCase = new WebinarUseCase(webinarRepo);
     setWebinars(allWebinars);
   };
 
+  const getWebinarById = (id : number) => {
+  const webinar = webinars.find((item, index) => {
+      const webinarWithId = item as Webinar;
+      return webinarWithId.id === id;
+    });
+    if(webinar){
+      const _webinar = {...webinar , instructorImage : base64ToImageFile(webinar.instructorImage , "image") }
+      setSelectedWebinar(_webinar);
+    } 
+  
+  }
+
   const createWebinars = (value: WebinarAPIEntity) => {
-    return webinarUseCase.invokeCreate(value);
+     webinarUseCase.invokeCreate(value); 
+     getWebinars();
   };
+
+  const deleteWebinarById = (id : string) => {
+    webinarUseCase.invokeRemove(id);
+    getWebinars();
+  }
+
+
 
   useEffect(()=>{
     getWebinars();
   },[])
 
-  return {webinars , createWebinars };
+  return {webinars , createWebinars , setWebinars , deleteWebinarById , getWebinarById , selectedWebinar};
 }
 

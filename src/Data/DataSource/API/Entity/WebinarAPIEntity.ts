@@ -5,6 +5,7 @@ instructorCompany : string,
 topic : string,
 webinarTitle : string,
 startDate : string,
-startTime : number,
-endTime : number
+startTime : string,
+endTime : string,
+instructorImage : string
 }

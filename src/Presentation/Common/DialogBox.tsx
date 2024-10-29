@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, ReactNode, SetStateAction } from 'react';
 import {
   Modal,
   Box,
@@ -7,9 +7,16 @@ import {
   Divider,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import DataTimeInputForm from './DateTimeInputForm';
-import ImageForm from './ImageForm';
-import ModalActions from './ModalBottom';
+
+
+
+
+  interface IDialogBox {
+    toggleModal : Dispatch<SetStateAction<boolean>> 
+    isModalOpen : boolean;
+    children?: ReactNode;
+  }
+
 
 const modalOverlayStyle = {
   position: 'fixed',
@@ -34,13 +41,15 @@ const style = {
   overflowY: 'auto', // Enable vertical scrolling if content overflows
 };
 
-const MyModal = () => {
-  const open = true;
-  const handleClose = () => {};
+const DialogBox : React.FC<IDialogBox> = ({toggleModal , isModalOpen , children}) => {
+  
+  const handleClose = () => {
+    toggleModal((prev) => !prev)
+  };
 
   return (
     <Modal
-      open={open}
+      open={isModalOpen}
       onClose={handleClose}
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} // Center modal
     >
@@ -52,24 +61,23 @@ const MyModal = () => {
             </Typography>
             <IconButton
               aria-label="close"
-              onClick={handleClose}
               sx={{ color: '#636973' }}
+              onClick={handleClose}
             >
               <CloseIcon />
             </IconButton>
           </Box>
           <Divider sx={{ my: 2 }} />
           
-          {/* Ensure forms are consistently styled */}
+         
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <ImageForm /> {/* Maintain spacing */}
-            <DataTimeInputForm />
+            {children}
           </Box>
-          <ModalActions />
+          
         </Box>
       </Box>
     </Modal>
   );
 };
 
-export default MyModal;
+export default DialogBox;

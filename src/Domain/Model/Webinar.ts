@@ -1,11 +1,12 @@
 export interface Webinar {
-  id: string;
+  id: number;
   instructorName: string;
   instructorRole: string;
   instructorCompany: string;
   topic: string;
   webinarTitle: string;
   startDate: string;
-  startTime: number;
-  endTime: number;
+  startTime: string;
+  endTime: string;
+  instructorImage : string
 }
