@@ -57,7 +57,7 @@ const DialogBox : React.FC<IDialogBox> = ({toggleModal , isModalOpen , children}
         <Box sx={style}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 12px' }}>
             <Typography variant="h6" component="h2">
-              Modal Title
+              Create Webinar
             </Typography>
             <IconButton
               aria-label="close"
