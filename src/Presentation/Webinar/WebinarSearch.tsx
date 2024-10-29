@@ -1,4 +1,10 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, {
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import {
   Box,
   TextField,
@@ -12,7 +18,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { filterData } from "../../Constants";
-import { filterExpresssions, FilterObject } from "../../Common/interfaces";
+import { FilterObject } from "../../Common/interfaces";
 
 interface IWebinarSearch {
   setExpression: Dispatch<SetStateAction<FilterObject>>;
@@ -20,6 +26,7 @@ interface IWebinarSearch {
 
 const WebinarSearch: React.FC<IWebinarSearch> = ({ setExpression }) => {
   const [selectedValue, setSelectedValue] = useState("");
+  const [searchValue, setSearchValue] = useState("");
 
   const handleChange = (
     event: SelectChangeEvent<string>,
@@ -36,6 +43,57 @@ const WebinarSearch: React.FC<IWebinarSearch> = ({ setExpression }) => {
       return newExpression;
     });
   };
+
+  const searchHandler = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setSearchValue(event.target.value);
+  };
+
+  useEffect(() => {
+    let id: NodeJS.Timeout | null = null;
+    if (searchValue) {
+      id = setTimeout(() => {
+        setExpression((prev: FilterObject) => {
+          const newExpression = { ...prev };
+
+          newExpression["searchByName"] = {
+            key: "instructorName",
+            operation: "equal",
+            value: searchValue,
+          };
+
+          newExpression["searchByCompany"] = {
+            key: "instructorCompany",
+            operation: "equal",
+            value: searchValue,
+          };
+
+          newExpression["searchByRole"] = {
+            key: "instructorRole",
+            operation: "equal",
+            value: searchValue,
+          };
+
+          return newExpression;
+        });
+      }, 500);
+    } else {
+      setExpression((prev) => {
+        let updatedExpression = {...prev};
+        ["searchByName" , "searchByCompany","searchByRole"].forEach((item) => {
+           delete updatedExpression[item];
+        })
+        return updatedExpression;
+      });
+    }
+
+    return () => {
+      if (id) {
+        clearTimeout(id);
+      }
+    };
+  }, [searchValue]);
 
   return (
     <Box
@@ -60,6 +118,7 @@ const WebinarSearch: React.FC<IWebinarSearch> = ({ setExpression }) => {
         placeholder="Search for webinar"
         variant="outlined"
         size="small"
+        onChange={searchHandler}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -106,7 +165,7 @@ const WebinarSearch: React.FC<IWebinarSearch> = ({ setExpression }) => {
                     height: "40px",
                   }}
                   renderValue={(value) => {
-                    return value ? value : item.title ;
+                    return value ? value : item.title;
                   }}
                 >
                   {item.values.map((item) => {

@@ -47,9 +47,12 @@ export const evalutateExpression = (
   expression: filterExpresssions,
   obj: any
 ) => {
+
   const { key, operation, value } = expression;
 
   const propValue = obj[key];
+
+
   switch (operation) {
     case "greater_than":
       return propValue > value;
