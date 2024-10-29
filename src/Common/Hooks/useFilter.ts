@@ -12,21 +12,19 @@ export default function useFilter(webinars: Webinar[] | WebinarAPIEntity[]) {
 
   useEffect(() => {
     const expressionButInArray = Object.values(expression);
-    console.log(expressionButInArray , "check")
+
     if (expressionButInArray.length) {
       const filteredData = webinars.filter(
         (webinar: Webinar | WebinarAPIEntity) => {
-          console.log(webinar, "web");
           let res = expressionButInArray.some((expression) => {
             return evalutateExpression(expression, webinar);
           });
 
-          console.log(res);
           return res;
         }
       );
       setFilteredData((prev) => filteredData);
-    }else setFilteredData([])
+    } else setFilteredData([]);
   }, [expression]);
 
   return { expression, setExpression, filteredData };
