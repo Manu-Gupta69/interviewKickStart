@@ -64,8 +64,9 @@ class LocalDB<T> implements IWebinarDataSource<T> {
 
   // Update a record by ID
   updateByField(id: string, updatedValue: Partial<T>): T | undefined {
+
     const allRecords = this.getAll();
-    const recordIndex = allRecords.findIndex((record: any) => record.id === id);
+    const recordIndex = allRecords.findIndex((record: any) => record.id == id);
 
     if (recordIndex > -1) {
       const updatedRecord = { ...allRecords[recordIndex], ...updatedValue };

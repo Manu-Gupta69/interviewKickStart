@@ -2,9 +2,8 @@ import { filterExpresssions } from "../Common/interfaces";
 
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-
   if (isNaN(date.getTime())) {
-    throw new Error("Invalid date string provided");
+    return "";
   }
 
   const options: Intl.DateTimeFormatOptions = {
@@ -47,11 +46,9 @@ export const evalutateExpression = (
   expression: filterExpresssions,
   obj: any
 ) => {
-
   const { key, operation, value } = expression;
 
   const propValue = obj[key];
-
 
   switch (operation) {
     case "greater_than":
@@ -66,6 +63,23 @@ export const evalutateExpression = (
   }
 };
 
+export const makeTitleCase = (str: string): string => {
+  let result = "";
+  let capitalize = true;
 
+  for (let i = 0; i < str.length; i++) {
+    const char = str[i];
 
+    if (char === " ") {
+      result += char;
+      capitalize = true;
+    } else if (capitalize) {
+      result += char.toUpperCase();
+      capitalize = false;
+    } else {
+      result += char.toLowerCase();
+    }
+  }
 
+  return result;
+};

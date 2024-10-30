@@ -5,7 +5,7 @@ export const CONST = {
 export const filterData = [
   {
     title: "Topic",
-    values: ["Front End Engineer", "Back End Engineer", "Full Stack Engineer"],
+    values: ["Front End Engineering", "Back End Engineering", "Full Stack Engineering"],
     key: "topic",
     operation: "equal",
     type : "Button"

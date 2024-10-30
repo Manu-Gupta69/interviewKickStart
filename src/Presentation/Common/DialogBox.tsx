@@ -12,9 +12,10 @@ import CloseIcon from '@mui/icons-material/Close';
 
 
   interface IDialogBox {
-    toggleModal : Dispatch<SetStateAction<boolean>> 
+    closeHandler : () => void;
     isModalOpen : boolean;
     children?: ReactNode;
+    modalTitle : string;
   }
 
 
@@ -41,28 +42,26 @@ const style = {
   overflowY: 'auto', // Enable vertical scrolling if content overflows
 };
 
-const DialogBox : React.FC<IDialogBox> = ({toggleModal , isModalOpen , children}) => {
+const DialogBox : React.FC<IDialogBox> = ({closeHandler , isModalOpen , children , modalTitle}) => {
   
-  const handleClose = () => {
-    toggleModal((prev) => !prev)
-  };
+ 
 
   return (
     <Modal
       open={isModalOpen}
-      onClose={handleClose}
+      onClose={closeHandler}
       sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }} // Center modal
     >
       <Box sx={modalOverlayStyle}>
         <Box sx={style}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '13px 12px' }}>
             <Typography variant="h6" component="h2">
-              Create Webinar
+              {modalTitle}
             </Typography>
             <IconButton
               aria-label="close"
               sx={{ color: '#636973' }}
-              onClick={handleClose}
+              onClick={closeHandler}
             >
               <CloseIcon />
             </IconButton>

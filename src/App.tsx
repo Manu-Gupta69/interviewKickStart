@@ -9,6 +9,7 @@ import useWebinar from "./Presentation/Webinar/useWebinar";
 import CustomForm from "./Presentation/Forms/CustomForm";
 import useFilter from "./Common/Hooks/useFilter";
 
+
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const {
@@ -17,12 +18,15 @@ function App() {
     deleteWebinarById,
     selectedWebinar,
     getWebinarById,
+    setSelectedWebinar,
+    updateWebinarById
   } = useWebinar();
 
-  const { filteredData , setExpression  } = useFilter(webinars);
+  const { filteredData , setExpression , expression } = useFilter(webinars);
 
   const toggleModal = () => {
     setIsModalOpen((prev) => !prev);
+    if(selectedWebinar) setSelectedWebinar(undefined);
   };
 
   const webinarCardUpdateHandler = (id: number) => {
@@ -30,23 +34,24 @@ function App() {
     getWebinarById(id);
   };
 
-
-    
+  const expressionArr = Object.keys(expression);
 
   return (
     <Box sx={{ padding: { sx: "12px", md: "30px" } }}>
       <WebinarNav toggleModal={setIsModalOpen} />
       <WebinarSearch setExpression={setExpression} />
       <WebinarCardGrid
+        showNoResultFallBack={Boolean(expressionArr.length && !filteredData.length)}
         webinars={filteredData.length ? filteredData : webinars}
         deleteHandler={deleteWebinarById}
         updateHandler={webinarCardUpdateHandler}
       />
-      <DialogBox toggleModal={setIsModalOpen} isModalOpen={isModalOpen}>
+      <DialogBox modalTitle={selectedWebinar ? "Update Webinar" : "Create Webinar"} isModalOpen={isModalOpen} closeHandler={() => toggleModal()}>
         <CustomForm
           initialFormValues={selectedWebinar}
           createWebinars={createWebinars}
           toggleModal={() => toggleModal()}
+          updateWebinar={updateWebinarById}
         />
       </DialogBox>
     </Box>

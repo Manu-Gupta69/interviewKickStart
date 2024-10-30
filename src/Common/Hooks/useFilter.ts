@@ -12,7 +12,6 @@ export default function useFilter(webinars: Webinar[] | WebinarAPIEntity[]) {
 
   useEffect(() => {
     const expressionButInArray = Object.values(expression);
-
     if (expressionButInArray.length) {
       const filteredData = webinars.filter(
         (webinar: Webinar | WebinarAPIEntity) => {

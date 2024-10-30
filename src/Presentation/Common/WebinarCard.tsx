@@ -51,7 +51,7 @@ const WebinarCard: React.FC<IWebinarCard> = ({ webinar, onDelete, onEdit }) => {
             {webinar.instructorName}
           </Typography>
           <Typography variant="body2" sx={{ color: "#FFF" }}>
-            {webinar.webinarTitle}
+            {webinar.instructorRole}
           </Typography>
           <Typography variant="body2" sx={{ color: "#FFF", mt: 1.5 }}>
             {webinar.instructorCompany}
@@ -76,7 +76,7 @@ const WebinarCard: React.FC<IWebinarCard> = ({ webinar, onDelete, onEdit }) => {
           {webinar.topic}
         </Typography>
         <Typography variant="h6" sx={{ color: "#0E1013", fontSize: 18, mt: 1 }}>
-          {webinar.topic}
+          {webinar.webinarTitle}
         </Typography>
         <Typography variant="body2" sx={{ color: "#2E333B", mt: 1 }}>
           {modifiedDate}

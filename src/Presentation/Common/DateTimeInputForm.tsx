@@ -83,8 +83,12 @@ const DataTimeInputForm: React.FC<DataTimeInputFormProps> = ({
               {field.type === "date" ? (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
-                    defaultValue={dayjs(new Date(values.startDate))}
-                    label="Start Date"
+                    defaultValue={
+                      values[field.name]
+                        ? dayjs(new Date(values[field.name]))
+                        : null
+                    }
+                    label={field.label}
                     onChange={(value) =>
                       handleChange({ name: field.name, value })
                     }
@@ -93,7 +97,9 @@ const DataTimeInputForm: React.FC<DataTimeInputFormProps> = ({
               ) : field.type === "time" ? (
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <TimePicker
-                    defaultValue={dayjs(values[field.name])}
+                    defaultValue={
+                      values[field.name] ? dayjs(values[field.name]) : null
+                    }
                     label={field.name}
                     onChange={(value) =>
                       handleChange({ name: field.name, value })

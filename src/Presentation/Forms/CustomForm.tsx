@@ -7,9 +7,10 @@ import DateTimeInputForm from "../Common/DateTimeInputForm";
 import ModalActions from "../Common/ModalBottom";
 import ImageForm from "../Common/ImageForm";
 import dayjs, { Dayjs } from "dayjs";
-import {  convertToBase64 } from "../../Utils";
+import { convertToBase64, makeTitleCase } from "../../Utils";
 import { WebinarAPIEntity } from "../../Data/DataSource/API/Entity/WebinarAPIEntity";
 import { FormValues } from "../../Common/interfaces";
+import ErrorDisplay from "../Common/ErrorDisplay";
 
 const formConfig = {
   instructorDetails: [
@@ -81,28 +82,72 @@ const formConfig = {
 };
 
 // Validation Schema
-const validationSchema = Yup.object({
-  instructorName: Yup.string().required("Instructor name is required"),
-  instructorRole: Yup.string().required("Instructor role is required"),
-  instructorCompany: Yup.string().required("Instructor company is required"),
-  instructorImage: Yup.mixed().required("Instructor image is required"),
-  topic: Yup.string().required("Topics are required"),
-  webinarTitle: Yup.string().required("Webinar title is required"),
-  startDate: Yup.date().required("Start date is required"),
-  startTime: Yup.string().required("Start time is required"),
-  endTime: Yup.string().required("End time is required"),
+const validationSchema = Yup.object().shape({
+  webinarTitle: Yup.string()
+    .required("Webinar Title is required")
+    .min(5, "Title must be at least 5 characters long"),
+
+  instructorName: Yup.string().required("Instructor Name is required"),
+
+  instructorRole: Yup.string().required("Instructor Role is required"),
+
+  instructorCompany: Yup.string().required("Instructor Company is required"),
+
+  instructorImage: Yup.mixed().required("Instructor Image is required"),
+
+  topic: Yup.string()
+    .required("Topic is required")
+    .min(5, "Topic must be at least 5 characters long"),
+
+  // Date and Time Validation
+  startDate: Yup.string()
+  .required("Start Date is required")
+  .test("is-valid-date", "Invalid date format for Start Date", (value) => {
+    const parsedDate = Date.parse(value);
+    return !isNaN(parsedDate);
+  })
+  .test("is-not-past-date", "Start Date cannot be in the past", (value) => {
+    const parsedDate = Date.parse(value);
+    return parsedDate >= Date.now();
+  }),
+
+  startTime: Yup.string()
+    .required("Start Time is required")
+    .test(
+      "is-valid-time",
+      "Invalid time format for Start Time",
+      (value) => !isNaN(Date.parse(value))
+    ),
+
+  endTime: Yup.string()
+    .required("End Time is required")
+    .test(
+      "is-valid-time",
+      "Invalid time format for End Time",
+      (value) => !isNaN(Date.parse(value))
+    )
+    .test(
+      "is-after-start-time",
+      "End Time must be after Start Time",
+      function (value) {
+        const { startTime } = this.parent;
+        return new Date(value) > new Date(startTime);
+      }
+    ),
 });
 
 interface ICustomForm {
   createWebinars: (value: WebinarAPIEntity) => void;
   toggleModal: () => void;
-  initialFormValues: FormValues | undefined;
+  initialFormValues: (FormValues & { id: number }) | undefined;
+  updateWebinar: (id: string, value: WebinarAPIEntity) => void;
 }
 
 const CustomForm: React.FC<ICustomForm> = ({
   createWebinars,
   toggleModal,
   initialFormValues,
+  updateWebinar,
 }) => {
   const [formValues, setFormValues] = useState<FormValues>(
     initialFormValues || {
@@ -112,17 +157,17 @@ const CustomForm: React.FC<ICustomForm> = ({
       instructorImage: null,
       topic: "",
       webinarTitle: "",
-      startDate: new Date().toISOString(),
-      startTime: dayjs(new Date().getTime()).format(),
-      endTime: dayjs(new Date().getTime()).add(1, 'hour').format(),
+      startDate: "",
+      startTime: "",
+      endTime: "",
     }
   );
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [imagePreview, setImagePreview] = useState<string | null>(
-    initialFormValues?.instructorImage 
-    ? URL.createObjectURL(initialFormValues.instructorImage) 
-    : null
+    initialFormValues?.instructorImage
+      ? URL.createObjectURL(initialFormValues.instructorImage)
+      : null
   );
 
   const handleChange = (
@@ -162,9 +207,9 @@ const CustomForm: React.FC<ICustomForm> = ({
   const validate = async () => {
     try {
       await validationSchema.validate(formValues, { abortEarly: false });
-      setErrors({});
       return true;
     } catch (err) {
+      
       if (err instanceof Yup.ValidationError) {
         const validationErrors = err.inner.reduce(
           (acc: any, error: Yup.ValidationError) => {
@@ -175,6 +220,7 @@ const CustomForm: React.FC<ICustomForm> = ({
           },
           {}
         );
+
         setErrors(validationErrors);
       }
       return false;
@@ -183,25 +229,29 @@ const CustomForm: React.FC<ICustomForm> = ({
 
   const handleSubmit = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+
     const isValid = await validate();
 
-    // if (isValid) {
-    //   // Convert the file to a Base64 string for submission
-    //   const base64String = await convertToBase64(formValues.instructorImage!);
-    //   const valuesToSubmit = { ...formValues, instructorImage: base64String };
-    //   console.log("Form Submitted with values:", valuesToSubmit);
-    //   // Handle form submission logic here, e.g., sending to an API
+    if (isValid) {
+      const base64String = await convertToBase64(formValues.instructorImage!);
+      const valuesToSubmit = {
+        ...formValues,
+        instructorImage: base64String,
+        topic: makeTitleCase(formValues.topic),
+      };
 
-    // }
-
-    const base64String = await convertToBase64(formValues.instructorImage!);
-    const valuesToSubmit = { ...formValues, instructorImage: base64String };
-    createWebinars(valuesToSubmit);
-    toggleModal();
+      if (initialFormValues) {
+        updateWebinar(`${initialFormValues.id}`, valuesToSubmit);
+      } else {
+        createWebinars(valuesToSubmit);
+      }
+      toggleModal();
+    }
   };
 
   return (
     <form>
+     <ErrorDisplay errorMessages={Object.values(errors)} />
       <Box>
         <ImageForm
           values={formValues}
@@ -224,7 +274,9 @@ const CustomForm: React.FC<ICustomForm> = ({
         <ModalActions
           cancelHandler={toggleModal}
           submitHandler={handleSubmit}
-          submitBtnConfig={{ name: "Create Webinar" }}
+          submitBtnConfig={{
+            name: initialFormValues ? "Update Webinar" : "Create Webinar",
+          }}
         />
       </Box>
     </form>
